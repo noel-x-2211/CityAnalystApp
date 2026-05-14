@@ -1,4 +1,4 @@
-2026-05-14|Physics: What is the velocity of a ball that travels 20m in 2s?|10 m/s
+2026-06-01|Physics: What is the velocity of a ball that travels 20m in 2s?|10 m/s
 2026-06-01|Chemistry: Symbol for Gold?|Au
 2026-06-01|Math: Solve 2x + 10 = 20|x = 5
 2026-06-01|Football: Speed = Distance / ?|Time
