@@ -1,108 +1,107 @@
 import streamlit as st
 import datetime
+import pandas as pd
 
-# --- CONFIG & THEME ---
-st.set_page_config(page_title="CityAnalyst Pro", layout="wide")
-st.markdown("<style>.stApp {background: #1C2C5B; color: white;}</style>", unsafe_allow_html=True)
+# --- CONFIG & ADVANCED STYLING ---
+st.set_page_config(page_title="CityAnalyst Ultra", layout="wide")
 
-# --- MAN CITY PLAYER DATABASE ---
-# In a real job, this would come from a Live API. For now, we build the "Master Sheet".
-city_squad = {
-    "Erling Haaland": {"pos": "ST", "matches": 31, "goals": 27, "fitness": 85, "injury_risk": "Low"},
-    "Kevin De Bruyne": {"pos": "CAM", "matches": 18, "goals": 4, "fitness": 65, "injury_risk": "High"},
-    "Phil Foden": {"pos": "RW/CAM", "matches": 34, "goals": 19, "fitness": 92, "injury_risk": "Low"},
-    "Rodri": {"pos": "CDM", "matches": 33, "goals": 7, "fitness": 70, "injury_risk": "Medium"},
-    "Bernardo Silva": {"pos": "CM/RW", "matches": 30, "goals": 6, "fitness": 88, "injury_risk": "Low"},
-    "Ruben Dias": {"pos": "CB", "matches": 28, "goals": 0, "fitness": 95, "injury_risk": "Low"}
+def local_css(tab_type):
+    if tab_type == "Football":
+        bg_url = "https://www.mancity.com/dist/images/logos/man-city-logo.svg"
+        st.markdown(f"""
+            <style>
+            .stApp {{
+                background: linear-gradient(rgba(28, 44, 91, 0.9), rgba(28, 44, 91, 0.9)), 
+                            url("{bg_url}") no-repeat center;
+                background-size: 400px;
+                transition: all 0.5s ease-in-out;
+            }}
+            .player-card {{ background: rgba(108, 171, 221, 0.2); border-radius: 15px; padding: 20px; border: 1px solid #6CABDD; }}
+            </style>
+            """, unsafe_allow_html=True)
+    else:
+        st.markdown("""
+            <style>
+            .stApp { background: #0E1117; color: #00FF41; font-family: 'Courier New', monospace; transition: all 0.5s ease-in-out; }
+            </style>
+            """, unsafe_allow_html=True)
+
+# --- THE 2026 SQUAD DATABASE ---
+# Updated: KDB removed. Added 2025/26 relevant players.
+squad = {
+    "Erling Haaland": {"pos": "ST", "no": 9, "health": 95, "chances": 12, "goals": 32, "risk": "Low", "img": "https://img.icons8.com/color/144/football-player.png"},
+    "Phil Foden": {"pos": "RW", "no": 47, "health": 92, "chances": 45, "goals": 18, "risk": "Low", "img": "https://img.icons8.com/color/144/football-player.png"},
+    "Rodri": {"pos": "CDM", "no": 16, "health": 88, "chances": 22, "goals": 8, "risk": "Medium", "img": "https://img.icons8.com/color/144/football-player.png"},
+    "Bernardo Silva": {"pos": "CM", "no": 20, "health": 90, "chances": 38, "goals": 7, "risk": "Low", "img": "https://img.icons8.com/color/144/football-player.png"},
+    "Ruben Dias": {"pos": "CB", "no": 3, "health": 98, "chances": 5, "goals": 1, "risk": "Low", "img": "https://img.icons8.com/color/144/football-player.png"},
+    "Ederson": {"pos": "GK", "no": 31, "health": 100, "chances": 2, "goals": 0, "risk": "Low", "img": "https://img.icons8.com/color/144/football-player.png"},
+    "Josko Gvardiol": {"pos": "LB", "no": 24, "health": 85, "chances": 15, "goals": 4, "risk": "Medium", "img": "https://img.icons8.com/color/144/football-player.png"},
+    "Jeremy Doku": {"pos": "LW", "no": 11, "health": 78, "chances": 28, "goals": 6, "risk": "High", "img": "https://img.icons8.com/color/144/football-player.png"},
+    "John Stones": {"pos": "CB", "no": 5, "health": 70, "chances": 10, "goals": 2, "risk": "Medium", "img": "https://img.icons8.com/color/144/football-player.png"},
+    "Savinho": {"pos": "RW", "no": 26, "health": 94, "chances": 31, "goals": 9, "risk": "Low", "img": "https://img.icons8.com/color/144/football-player.png"},
+    "Mateo Kovacic": {"pos": "CM", "no": 8, "health": 82, "chances": 18, "goals": 3, "risk": "Low", "img": "https://img.icons8.com/color/144/football-player.png"},
 }
 
-upcoming_matches = [
-    {"date": "2026-05-17", "opponent": "Real Madrid (UCL)", "venue": "Etihad"},
-    {"date": "2026-05-21", "opponent": "Chelsea (PL)", "venue": "Stamford Bridge"},
-]
+# --- NAVIGATION ---
+st.sidebar.title("CITY ANALYST PRO")
+menu = st.sidebar.radio("Select Hub", ["🏟️ Football Scout", "🧠 Study Lab"])
 
-# --- LOAD STUDY DATA ---
-def load_tasks():
-    tasks_dict = {}
-    try:
-        with open("questions.txt", "r") as f:
-            for line in f:
-                if "|" in line:
-                    date, q, a = line.strip().split("|")
-                    if date not in tasks_dict: tasks_dict[date] = []
-                    tasks_dict[date].append({"q": q, "a": a})
-    except:
-        tasks_dict = {"2026-06-01": [{"q": "System: questions.txt not found!", "a": "Check GitHub"}]}
-    return tasks_dict
+if menu == "🏟️ Football Scout":
+    local_css("Football")
+    st.title("Performance & Scouting Portal")
+    
+    scout_tab1, scout_tab2, scout_tab3 = st.tabs(["Player Profiles", "Tactical Pitch", "Fixtures"])
 
-# --- UI NAVIGATION ---
-st.title("🛡️ CityAnalyst Performance Hub")
-tab1, tab2, tab3 = st.tabs(["📚 Study Lab", "📊 Squad Analytics", "🏟️ Match Center"])
-
-# --- TAB 1: STUDY LAB ---
-with tab1:
-    today = datetime.date.today().strftime("%Y-%m-%d")
-    all_tasks = load_tasks()
-    display_date = today if today in all_tasks else "2026-05-14" # Testing mode
-    
-    st.header(f"Daily Mission: {display_date}")
-    if display_date in all_tasks:
-        for i, item in enumerate(all_tasks[display_date]):
-            with st.expander(f"Task {i+1}: {item['q'][:30]}..."):
-                st.write(item['q'])
-                if st.button(f"Reveal Solution {i+1}"):
-                    st.success(item['a'])
-    else:
-        st.info("No study tasks for today. Focus on scouting!")
-
-# --- TAB 2: SQUAD ANALYTICS ---
-with tab2:
-    st.header("Player Performance & Medical Report")
-    selected_player = st.selectbox("Select Player to Analyse", list(city_squad.keys()))
-    
-    p_data = city_squad[selected_player]
-    
-    col1, col2, col3 = st.columns(3)
-    col1.metric("Position", p_data["pos"])
-    col2.metric("Matches Played", p_data["matches"])
-    col3.metric("Goals/Assists", p_data["goals"])
-
-    st.subheader("Health & Injury Risk")
-    # Health Bar
-    st.write(f"**Current Fitness:** {p_data['fitness']}%")
-    st.progress(p_data['fitness'])
-    
-    if p_data['injury_risk'] == "High":
-        st.error(f"⚠️ CRITICAL RISK: {selected_player} shows signs of hamstring fatigue. Recommended: Rest.")
-    elif p_data['injury_risk'] == "Medium":
-        st.warning(f"🟡 CAUTION: {selected_player} has high minute accumulation. Monitor load.")
-    else:
-        st.success(f"🟢 READY: {selected_player} is at peak physical condition.")
-
-# --- TAB 3: MATCH CENTER ---
-with tab3:
-    st.header("Fixture List & Lineup Fixer")
-    
-    # Upcoming Match List
-    for match in upcoming_matches:
-        st.write(f"⚽ **{match['date']}** vs {match['opponent']} ({match['venue']})")
-    
-    st.divider()
-    
-    st.subheader("Starting XI Builder")
-    st.write("Select your tactical lineup based on fitness and stats:")
-    
-    available_players = list(city_squad.keys())
-    lineup = st.multiselect("Pick your Starting 11", available_players, default=available_players[:3])
-    
-    if len(lineup) > 11:
-        st.error("Too many players! A team can only have 11.")
-    else:
-        st.info(f"Currently Selected: {len(lineup)}/11 players.")
+    with scout_tab1:
+        st.subheader("Deep Dive Analysis")
+        selected = st.selectbox("Select Player to Inspect", list(squad.keys()))
+        p = squad[selected]
         
-    if st.button("Finalise Tactical Sheet"):
-        st.balloons()
-        st.write("### Tactical Summary")
-        for p in lineup:
-            risk = city_squad[p]['injury_risk']
-            st.write(f"- **{p}** ({city_squad[p]['pos']}) | Risk Level: {risk}")
+        col1, col2 = st.columns([1, 2])
+        with col1:
+            st.image(p['img'], width=200)
+            st.metric("Jersey No.", p['no'])
+            st.write(f"**Position:** {p['pos']}")
+        
+        with col2:
+            st.markdown(f"### {selected} Summary")
+            c1, c2, c3 = st.columns(3)
+            c1.metric("Goals", p['goals'])
+            c2.metric("Chances Created", p['chances'])
+            c3.metric("Fitness", f"{p['health']}%")
+            
+            st.write("**Last Match Heatmap (Simulated)**")
+            # Simple Heatmap Representation
+            heatmap_data = pd.DataFrame([[0, 1, 2], [1, 5, 2], [0, 2, 1]])
+            st.caption("Concentrated activity in Final Third")
+            st.bar_chart(heatmap_data)
+            
+            if p['risk'] == "High":
+                st.error("⚠️ Injury Warning: High fatigue detected in recovery scans.")
+
+    with scout_tab2:
+        st.subheader("Starting XI & Sub Fixer")
+        # Virtual Pitch Logic
+        st.markdown("""
+            <div style="background-color: #2e7d32; height: 300px; border-radius: 20px; border: 3px solid white; position: relative;">
+                <div style="position: absolute; left: 50%; top: 10%; border: 2px solid white; height: 50px; width: 100px; transform: translateX(-50%);"></div>
+                <div style="position: absolute; left: 50%; bottom: 10%; border: 2px solid white; height: 50px; width: 100px; transform: translateX(-50%);"></div>
+                <p style="color: white; text-align: center; margin-top: 130px; font-weight: bold; opacity: 0.5;">VIRTUAL ETIHAD PITCH</p>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        starters = st.multiselect("Select Starting XI", list(squad.keys()), default=list(squad.keys())[:5])
+        subs = [p for p in squad.keys() if p not in starters]
+        
+        col_s1, col_s2 = st.columns(2)
+        col_s1.write("### ✅ Lineup")
+        for s in starters: col_s1.write(f"🏃 {s} ({squad[s]['pos']})")
+        
+        col_s2.write("### 🪑 Substitutes")
+        for sub in subs: col_s2.write(f"👟 {sub}")
+
+else:
+    local_css("Study")
+    st.title("Data Analyst Study Lab")
+    st.write("System: Initializing NCERT & IITM Modules...")
+    # Your study code from before goes here
