@@ -1,14 +1,12 @@
 import streamlit as st
 import datetime
-import pandas as pd
 
 # --- TERMINAL CONFIG ---
 st.set_page_config(page_title="Data Analyst Terminal", layout="wide")
 
-# --- CUSTOM CSS: MATRIX / PRO ANALYST THEME ---
+# --- PROFESSIONAL MATRIX THEME ---
 st.markdown("""
     <style>
-    /* Main Background and Text */
     .stApp {
         background-color: #050505;
         background-image: radial-gradient(#00FF41 0.5px, transparent 0.5px);
@@ -16,56 +14,37 @@ st.markdown("""
         color: #00FF41 !important;
         font-family: 'Courier New', Courier, monospace;
     }
-    
-    /* Headers and Text */
-    h1, h2, h3, p, span, label {
-        color: #00FF41 !important;
-        text-shadow: 0 0 5px #00FF41;
-    }
-
-    /* Professional Container Styling */
-    .stAlert {
-        background-color: rgba(0, 255, 65, 0.05) !important;
-        color: #00FF41 !important;
-        border: 1px solid #00FF41 !important;
-    }
-
-    /* Button Styling */
+    h1, h2, h3, p, span, label { color: #00FF41 !important; text-shadow: 0 0 5px #00FF41; }
     .stButton>button {
         background-color: #000000 !important;
         color: #00FF41 !important;
         border: 1px solid #00FF41 !important;
-        border-radius: 0px !important;
         width: 100%;
-        transition: 0.3s;
     }
-    .stButton>button:hover {
-        background-color: #00FF41 !important;
-        color: #000000 !important;
-    }
-
-    /* Expander Styling */
-    .streamlit-expanderHeader {
-        background-color: #000000 !important;
-        border: 1px solid #00FF41 !important;
-        color: #00FF41 !important;
-    }
+    .stSuccess { background-color: #001a00 !important; color: #00FF41 !important; border: 1px solid #00FF41; }
     </style>
 """, unsafe_allow_html=True)
 
 # --- APP HEADER ---
-st.title("📟 DATA ANALYST CAREER TERMINAL")
-st.markdown("---")
+st.title("📟 ANALYST BOOTCAMP: PHASE 1")
 
-# --- SIDEBAR: CAREER TRACKER ---
-st.sidebar.header("🚀 CAREER PROGRESS")
-progress = st.sidebar.slider("Syllabus Completion %", 0, 100, 15)
-st.sidebar.write(f"**Target:** 20 LPA Data Analyst Role")
+# --- DATE LOGIC ---
+target_start = datetime.date(2026, 6, 1)
+today = datetime.date.today()
+days_left = (target_start - today).days
+
+# --- SIDEBAR: MISSION CONTROL ---
+st.sidebar.header("📊 SYSTEM STATUS")
+if days_left > 0:
+    st.sidebar.warning(f"T-MINUS {days_left} DAYS TO LAUNCH")
+else:
+    st.sidebar.success("MISSION ACTIVE")
+
 st.sidebar.markdown("---")
-st.sidebar.write("**Focus Areas:**")
-st.sidebar.code("1. IITM BS Degree\n2. CUET Preparation\n3. Python & Stats")
+st.sidebar.write("**Exam Targets:**")
+st.sidebar.code("• IITM BS Qualifier\n• CUET Physics/Chem\n• Stats Mastery")
 
-# --- CORE LOGIC: QUESTIONS ENGINE ---
+# --- QUESTIONS ENGINE (LOCKED TO JUNE 1ST) ---
 def load_data():
     tasks_dict = {}
     try:
@@ -78,43 +57,31 @@ def load_data():
                         if date_str not in tasks_dict:
                             tasks_dict[date_str] = []
                         tasks_dict[date_str].append({"q": question, "a": answer})
-    except FileNotFoundError:
-        st.error("SYSTEM ERROR: 'questions.txt' not found in root directory.")
+    except:
+        pass
     return tasks_dict
 
-# Initialize Data
 data_engine = load_data()
-today = datetime.date.today().strftime("%Y-%m-%d")
 
-# --- MAIN DISPLAY ---
-col1, col2 = st.columns([2, 1])
+# FORCING THE DATE TO JUNE 1ST REGARDLESS OF TODAY
+start_date_key = "2026-06-01"
 
-with col1:
-    st.subheader(f"📅 Daily Mission: {today}")
-    
-    # If today's questions exist, show them. Otherwise, show a placeholder for June 1st.
-    display_date = today if today in data_engine else "2026-06-01"
-    
-    if display_date in data_engine:
-        for i, task in enumerate(data_engine[display_date]):
-            with st.container():
-                st.markdown(f"### TASK_{i+1}")
-                st.write(task['q'])
-                with st.expander("REVEAL ANALYTICAL SOLUTION"):
-                    st.success(task['a'])
-                st.markdown("<br>", unsafe_allow_html=True)
-    else:
-        st.info("SYSTEM IDLE: No tasks synced for today. Waiting for 'questions.txt' update.")
+st.subheader(f"📅 SCHEDULED START: {start_date_key}")
 
-with col2:
-    st.subheader("📊 Exam Insights")
-    with st.expander("IIT Madras BS"):
-        st.write("- Focus on Computational Thinking")
-        st.write("- Statistics and Probability")
-    with st.expander("CUET 2026"):
-        st.write("- NCERT Physics/Chemistry")
-        st.write("- Logical Reasoning")
+if start_date_key in data_engine:
+    st.info("System Ready. June 1st Curriculum Loaded Below.")
+    for i, task in enumerate(data_engine[start_date_key]):
+        with st.container():
+            st.markdown(f"### ⚡ TASK_{i+1}")
+            st.write(task['q'])
+            if st.button(f"VERIFY SOLUTION {i+1}"):
+                st.success(f"ANALYSIS: {task['a']}")
+            st.markdown("---")
+else:
+    st.error(f"ENTRY NOT FOUND: Please ensure 'questions.txt' has a '{start_date_key}' entry.")
 
-# --- FOOTER ---
-st.markdown("---")
-st.caption("Terminal Status: Online | Encryption: Active | Career Path: 20 LPA Secured")
+# --- PRE-SEASON PREP ---
+with st.expander("📝 PRE-SEASON SYLLABUS CHECK"):
+    st.write("**IIT Madras:** Prepare for Computational Thinking and Discrete Math.")
+    st.write("**CUET:** Revise NCERT Class 12 Physics (Electrostatics/Current Electricity).")
+    st.write("**Career:** Finalize your Python environment setup.")
