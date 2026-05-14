@@ -1,126 +1,108 @@
 import streamlit as st
 import datetime
 
-# --- 1. PREMIUM LOOK & FEEL ---
+# --- CONFIG & THEME ---
 st.set_page_config(page_title="CityAnalyst Pro", layout="wide")
+st.markdown("<style>.stApp {background: #1C2C5B; color: white;}</style>", unsafe_allow_html=True)
 
-# CSS for a Stunning Background and Glass UI
-st.markdown("""
-    <style>
-    .stApp {
-        background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
-        url("https://images.unsplash.com/photo-1522778119026-d647f0596c20?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80");
-        background-size: cover;
-        background-attachment: fixed;
-    }
-    
-    /* Transparent "Glass" Cards for content */
-    div.stText, div.stMarkdown, section.main .block-container {
-        color: white !important;
-    }
-
-    /* Styling the Sidebar */
-    [data-testid="stSidebar"] {
-        background-color: rgba(28, 44, 91, 0.8) !important;
-        backdrop-filter: blur(10px);
-    }
-
-    /* Styling Buttons */
-    .stButton>button {
-        width: 100%;
-        border-radius: 12px;
-        background-color: #6CABDD !important;
-        color: white !important;
-        border: none;
-        font-weight: bold;
-        transition: 0.3s;
-    }
-    
-    .stButton>button:hover {
-        background-color: #5992bd !important;
-        transform: scale(1.02);
-    }
-
-    /* Question Expanders */
-    .streamlit-expanderHeader {
-        background-color: rgba(255, 255, 255, 0.1) !important;
-        border-radius: 10px !important;
-        color: white !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-
-# --- 2. THE DATA (Your Lifelong Database) ---
-daily_db = {
-    "2026-05-13": [
-        {"q": "Today's Task: Finish setting up the App UI", "a": "COMPLETED! ✅"},
-        {"q": "Goal: IIT Madras Application Status", "a": "Apply before May 31st!"}
-    ],
-    "2026-06-01": [
-        {"q": "Math: If f(x) = x^2 + 3, find f(5).", "a": "28"},
-        {"q": "Stats: Mean of Haaland's goals (1, 0, 2)?", "a": "1.0"},
-        {"q": "Logic: If 'Start' is True and 'Fit' is False, what is (Start AND Fit)?", "a": "False"},
-        {"q": "Math: Solve for x: 10^x = 100", "a": "2"},
-        {"q": "Comp Thinking: What do you call a loop that never ends?", "a": "Infinite Loop"},
-        {"q": "English: Synonym of 'Predict'?", "a": "Forecast"},
-        {"q": "Stats: If a player scores 2 goals in 4 shots, what is the conversion rate?", "a": "50%"},
-        {"q": "Math: Derivative of 5x?", "a": "5"},
-        {"q": "Logic: Which gate gives True only if both inputs are True?", "a": "AND Gate"},
-        {"q": "Comp Thinking: A diamond shape in a flowchart represents what?", "a": "Decision"},
-        {"q": "Math: Area of a circle with radius 7? (Use 22/7)", "a": "154"},
-        {"q": "Stats: The middle value in a sorted list is called?", "a": "Median"},
-        {"q": "English: Antonym of 'Aggressive'?", "a": "Passive"},
-        {"q": "Logic: Is (NOT True) equivalent to False?", "a": "Yes"},
-        {"q": "Comp Thinking: First step in solving any problem with code?", "a": "Algorithm Design"}
-    ]
+# --- MAN CITY PLAYER DATABASE ---
+# In a real job, this would come from a Live API. For now, we build the "Master Sheet".
+city_squad = {
+    "Erling Haaland": {"pos": "ST", "matches": 31, "goals": 27, "fitness": 85, "injury_risk": "Low"},
+    "Kevin De Bruyne": {"pos": "CAM", "matches": 18, "goals": 4, "fitness": 65, "injury_risk": "High"},
+    "Phil Foden": {"pos": "RW/CAM", "matches": 34, "goals": 19, "fitness": 92, "injury_risk": "Low"},
+    "Rodri": {"pos": "CDM", "matches": 33, "goals": 7, "fitness": 70, "injury_risk": "Medium"},
+    "Bernardo Silva": {"pos": "CM/RW", "matches": 30, "goals": 6, "fitness": 88, "injury_risk": "Low"},
+    "Ruben Dias": {"pos": "CB", "matches": 28, "goals": 0, "fitness": 95, "injury_risk": "Low"}
 }
 
-# --- 3. SIDEBAR ---
-st.sidebar.image("https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg", width=100)
-st.sidebar.title("CityAnalyst Pro")
-page = st.sidebar.radio("Navigate", ["🏠 Home", "📚 Daily Study", "⚽ Match Scout"])
+upcoming_matches = [
+    {"date": "2026-05-17", "opponent": "Real Madrid (UCL)", "venue": "Etihad"},
+    {"date": "2026-05-21", "opponent": "Chelsea (PL)", "venue": "Stamford Bridge"},
+]
 
-# --- 4. DATE LOGIC ---
-today_str = datetime.date.today().strftime("%Y-%m-%d")
+# --- LOAD STUDY DATA ---
+def load_tasks():
+    tasks_dict = {}
+    try:
+        with open("questions.txt", "r") as f:
+            for line in f:
+                if "|" in line:
+                    date, q, a = line.strip().split("|")
+                    if date not in tasks_dict: tasks_dict[date] = []
+                    tasks_dict[date].append({"q": q, "a": a})
+    except:
+        tasks_dict = {"2026-06-01": [{"q": "System: questions.txt not found!", "a": "Check GitHub"}]}
+    return tasks_dict
 
-# --- 5. PAGES ---
-if page == "🏠 Home":
-    st.title("🏆 Performance Analytics Hub")
-    st.subheader(f"Session: {today_str}")
-    st.write("---")
-    st.write("### Your Career Path:")
-    st.success("📍 Step 1: Python Basics (COMPLETED)")
-    st.info("📍 Step 2: IIT Madras Qualifier Prep (CURRENT)")
-    st.warning("📍 Step 3: Performance Analyst Internship (FUTURE)")
+# --- UI NAVIGATION ---
+st.title("🛡️ CityAnalyst Performance Hub")
+tab1, tab2, tab3 = st.tabs(["📚 Study Lab", "📊 Squad Analytics", "🏟️ Match Center"])
 
-elif page == "📚 Daily Study":
-    st.title("📖 Study Lab")
+# --- TAB 1: STUDY LAB ---
+with tab1:
+    today = datetime.date.today().strftime("%Y-%m-%d")
+    all_tasks = load_tasks()
+    display_date = today if today in all_tasks else "2026-05-14" # Testing mode
     
-    # Check if date exists in DB
-    if today_str in daily_db:
-        tasks = daily_db[today_str]
+    st.header(f"Daily Mission: {display_date}")
+    if display_date in all_tasks:
+        for i, item in enumerate(all_tasks[display_date]):
+            with st.expander(f"Task {i+1}: {item['q'][:30]}..."):
+                st.write(item['q'])
+                if st.button(f"Reveal Solution {i+1}"):
+                    st.success(item['a'])
     else:
-        st.info("Showing Kickoff Prep (June 1st Data)")
-        tasks = daily_db["2026-06-01"]
+        st.info("No study tasks for today. Focus on scouting!")
 
-    for i, item in enumerate(tasks):
-        with st.expander(f"Task {i+1}"):
-            st.write(item["q"])
-            if st.button(f"Reveal Solution {i+1}"):
-                st.write(f"**Answer:** {item['a']}")
-
-elif page == "⚽ Match Scout":
-    st.title("🔍 Advanced Scouting")
-    col1, col2 = st.columns(2)
-    with col1:
-        player = st.text_input("Enter Player", "Kevin De Bruyne")
-        fitness = st.slider("Fitness Score", 0, 100, 85)
-    with col2:
-        match_importance = st.select_slider("Match Importance", options=["Low", "Medium", "High", "Final"])
+# --- TAB 2: SQUAD ANALYTICS ---
+with tab2:
+    st.header("Player Performance & Medical Report")
+    selected_player = st.selectbox("Select Player to Analyse", list(city_squad.keys()))
     
-    if st.button("Generate Tactical Verdict"):
-        if fitness > 80 or match_importance == "Final":
-            st.balloons()
-            st.success(f"MUST START: {player} is vital for this fixture.")
-        else:
-            st.warning(f"ROTATE: Keep {player} on the bench for load management.")
+    p_data = city_squad[selected_player]
+    
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Position", p_data["pos"])
+    col2.metric("Matches Played", p_data["matches"])
+    col3.metric("Goals/Assists", p_data["goals"])
+
+    st.subheader("Health & Injury Risk")
+    # Health Bar
+    st.write(f"**Current Fitness:** {p_data['fitness']}%")
+    st.progress(p_data['fitness'])
+    
+    if p_data['injury_risk'] == "High":
+        st.error(f"⚠️ CRITICAL RISK: {selected_player} shows signs of hamstring fatigue. Recommended: Rest.")
+    elif p_data['injury_risk'] == "Medium":
+        st.warning(f"🟡 CAUTION: {selected_player} has high minute accumulation. Monitor load.")
+    else:
+        st.success(f"🟢 READY: {selected_player} is at peak physical condition.")
+
+# --- TAB 3: MATCH CENTER ---
+with tab3:
+    st.header("Fixture List & Lineup Fixer")
+    
+    # Upcoming Match List
+    for match in upcoming_matches:
+        st.write(f"⚽ **{match['date']}** vs {match['opponent']} ({match['venue']})")
+    
+    st.divider()
+    
+    st.subheader("Starting XI Builder")
+    st.write("Select your tactical lineup based on fitness and stats:")
+    
+    available_players = list(city_squad.keys())
+    lineup = st.multiselect("Pick your Starting 11", available_players, default=available_players[:3])
+    
+    if len(lineup) > 11:
+        st.error("Too many players! A team can only have 11.")
+    else:
+        st.info(f"Currently Selected: {len(lineup)}/11 players.")
+        
+    if st.button("Finalise Tactical Sheet"):
+        st.balloons()
+        st.write("### Tactical Summary")
+        for p in lineup:
+            risk = city_squad[p]['injury_risk']
+            st.write(f"- **{p}** ({city_squad[p]['pos']}) | Risk Level: {risk}")
