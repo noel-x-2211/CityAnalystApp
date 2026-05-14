@@ -1,116 +1,91 @@
 import streamlit as st
 import datetime
-import pandas as pd
 
-# --- CONFIG ---
-st.set_page_config(page_title="CityAnalyst Master", layout="wide")
+# --- SYSTEM INITIALIZATION ---
+st.set_page_config(page_title="CityAnalyst 2026", layout="wide", initial_sidebar_state="expanded")
 
-# --- DATABASE: THE COMPLETE 2026-2027 SQUAD ---
-full_squad = {
-    "G. Donnarumma": {"pos": "GK", "no": 25, "health": 100, "goals": 0},
-    "James Trafford": {"pos": "GK", "no": 1, "health": 98, "goals": 0},
-    "Ruben Dias": {"pos": "CB", "no": 3, "health": 95, "goals": 1},
-    "John Stones": {"pos": "CB", "no": 5, "health": 70, "goals": 2},
-    "Marc Guéhi": {"pos": "CB", "no": 15, "health": 96, "goals": 2},
-    "Manuel Akanji": {"pos": "CB/RB", "no": 25, "health": 94, "goals": 3},
-    "Josko Gvardiol": {"pos": "LB/CB", "no": 24, "health": 91, "goals": 4},
-    "R. Ait-Nouri": {"pos": "LB", "no": 21, "health": 89, "goals": 4},
-    "Rico Lewis": {"pos": "RB/CDM", "no": 82, "health": 99, "goals": 2},
-    "Rodri": {"pos": "CDM", "no": 16, "health": 78, "goals": 6},
-    "Mateo Kovacic": {"pos": "CM", "no": 8, "health": 85, "goals": 4},
-    "Bernardo Silva": {"pos": "CM/RW", "no": 20, "health": 90, "goals": 7},
-    "Phil Foden": {"pos": "RW/AM", "no": 47, "health": 92, "goals": 21},
-    "James McAtee": {"pos": "AM", "no": 87, "health": 97, "goals": 5},
-    "Jeremy Doku": {"pos": "LW", "no": 11, "health": 82, "goals": 8},
-    "Savinho": {"pos": "RW/LW", "no": 26, "health": 94, "goals": 11},
-    "Oscar Bobb": {"pos": "RW", "no": 52, "health": 94, "goals": 9},
-    "Erling Haaland": {"pos": "ST", "no": 9, "health": 80, "goals": 38},
-    "Omar Marmoush": {"pos": "LW/ST", "no": 7, "health": 95, "goals": 14},
-    "A. Semenyo": {"pos": "RW/ST", "no": 42, "health": 88, "goals": 10},
-    "Matheus Nunes": {"pos": "CM", "no": 27, "health": 90, "goals": 2},
-    "Josh Wilson-Esbrand": {"pos": "LB", "no": 30, "health": 100, "goals": 0},
-    "Stefan Ortega": {"pos": "GK", "no": 18, "health": 100, "goals": 0},
-    "Nathan Aké": {"pos": "CB/LB", "no": 6, "health": 88, "goals": 3}
+# --- 100% COMPLETE 2026-2027 ROSTER ---
+squad_data = {
+    "GK": ["G. Donnarumma", "James Trafford", "Stefan Ortega"],
+    "DEF": ["Ruben Dias", "John Stones", "Marc Guéhi", "Manuel Akanji", "Josko Gvardiol", "Rayan Ait-Nouri", "Rico Lewis", "Nathan Aké", "Abdukodir Khusanov"],
+    "MID": ["Rodri", "Mateo Kovacic", "Bernardo Silva", "Phil Foden", "James McAtee", "Nico O'Reilly", "Tijjani Reijnders", "Matheus Nunes"],
+    "FWD": ["Erling Haaland", "Omar Marmoush", "Antoine Semenyo", "Jeremy Doku", "Savinho", "Oscar Bobb", "Claudio Echeverri"]
 }
 
-# --- THEME ENGINE ---
-nav = st.sidebar.radio("CHOOSE HUB", ["FOOTBALL HUB", "STUDY LAB"])
+# --- THEME ENGINE (FIXED) ---
+nav = st.sidebar.radio("COMMAND CENTER", ["FOOTBALL HUB", "STUDY LAB"])
 
 if nav == "FOOTBALL HUB":
     st.markdown("""
         <style>
         .stApp {
-            background: linear-gradient(rgba(108, 171, 221, 0.8), rgba(28, 44, 91, 0.9)), 
-                        url("https://www.mancity.com/dist/images/logos/man-city-logo.svg");
-            background-size: 500px; background-repeat: no-repeat; background-position: center;
+            background: linear-gradient(rgba(108, 171, 221, 0.85), rgba(28, 44, 91, 0.95)), 
+                        url("https://www.mancity.com/dist/images/logos/man-city-logo.svg") no-repeat center center fixed;
+            background-size: 400px;
         }
-        h1, h2, h3, p, .stMetric { color: white !important; }
-        .p-card { background: rgba(255,255,255,0.1); padding: 10px; border-radius: 10px; border: 1px solid white; margin: 5px; }
+        h1, h2, h3, p, label, .stMetric { color: white !important; font-family: 'Outfit', sans-serif; text-shadow: 1px 1px 2px black; }
+        .pitch-card { background: rgba(255,255,255,0.15); border: 1px solid #6CABDD; border-radius: 8px; padding: 10px; margin: 5px 0; }
         </style>
     """, unsafe_allow_html=True)
     
-    st.title("🛡️ CITY PERFORMANCE HUB")
-    tab1, tab2 = st.tabs(["SQUAD ANALYTICS", "MATCH CENTER"])
+    st.title("🛡️ CITY PERFORMANCE TERMINAL")
     
-    with tab1:
-        st.subheader("Interactive Tactical Pitch")
-        # Functional XI Builder
-        xi = st.multiselect("Select 11 Players for the Pitch", list(full_squad.keys()), default=list(full_squad.keys())[:11])
+    # --- TRUE TACTICAL BOARD ---
+    st.subheader("Match Day Tactical Board")
+    col_pitch, col_info = st.columns([2, 1])
+    
+    with col_pitch:
+        # Visual Grid representing the pitch zones
+        st.markdown("<div style='background:#2e7d32; padding:20px; border:3px solid white; border-radius:15px;'>", unsafe_allow_html=True)
+        xi = st.multiselect("Draft Starting XI", [p for pos in squad_data.values() for p in pos], default=[squad_data["GK"][0]] + squad_data["DEF"][:4] + squad_data["MID"][:3] + squad_data["FWD"][:3])
         
-        col_xi, col_bench = st.columns(2)
-        with col_xi:
-            st.write("### 🏟️ STARTING XI")
-            for player in xi:
-                st.markdown(f"<div class='p-card'>🏃 {player} ({full_squad[player]['pos']})</div>", unsafe_allow_html=True)
-        with col_bench:
-            st.write("### 🪑 BENCH")
-            for p in full_squad:
-                if p not in xi:
-                    st.write(f"👟 {p} ({full_squad[p]['pos']})")
+        c1, c2, c3 = st.columns(3)
+        for i, player in enumerate(xi):
+            with [c1, c2, c3][i % 3]:
+                st.markdown(f"<div class='pitch-card'>👕 {player}</div>", unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
 
-    with tab2:
-        st.subheader("Upcoming 2026 Fixtures")
-        st.info("📅 May 17: UCL Semi-Final vs Real Madrid")
-        st.info("📅 May 24: PL Final Day vs Liverpool")
-        st.success("📅 May 31: FA CUP FINAL")
+    with col_info:
+        st.write("### 📅 NEXT FIXTURE")
+        st.info("**UCL SEMI-FINAL**\n\nvs Real Madrid @ Etihad\n\nMay 17, 2026")
+        st.write("---")
+        st.write("### 📊 SQUAD DEPTH")
+        for pos, players in squad_data.items():
+            with st.expander(f"{pos} - {len(players)} Players"):
+                for p in players: st.write(f"• {p}")
 
 else:
-    # STUDY LAB THEME
+    # --- STUDY LAB ENGINE (FIXED) ---
     st.markdown("""
         <style>
-        .stApp { background-color: #000000; color: #00FF41 !important; }
-        .stMarkdown, p, h1, h2, h3, label { color: #00FF41 !important; font-family: 'Courier New'; }
-        .stButton>button { background-color: #000; border: 1px solid #00FF41; color: #00FF41; width: 100%; }
+        .stApp { background-color: #050505; color: #00FF41 !important; }
+        h1, h2, h3, p, label { color: #00FF41 !important; font-family: 'Courier New', monospace; }
+        .stButton>button { border: 1px solid #00FF41 !important; color: #00FF41 !important; background: black !important; width: 100%; }
+        .stSuccess { background-color: #001a00 !important; color: #00FF41 !important; border: 1px solid #00FF41; }
         </style>
     """, unsafe_allow_html=True)
     
-    st.title("🧠 DATA ANALYST STUDY LAB")
+    st.title("📟 ANALYST STUDY LAB")
     st.sidebar.progress(15)
-    st.sidebar.write("20 LPA Goal Progress")
-    
-    # Load Questions
-    def load_qs():
-        qs = {}
+    st.sidebar.caption("20 LPA Career Track")
+
+    # Question Logic
+    def get_data():
         try:
             with open("questions.txt", "r") as f:
-                for line in f:
-                    parts = line.strip().split("|")
-                    if len(parts) == 3:
-                        d, q, a = parts
-                        if d not in qs: qs[d] = []
-                        qs[d].append({"q": q, "a": a})
-        except: pass
-        return qs
+                return [line.strip().split("|") for line in f if "|" in line]
+        except: return []
 
-    data = load_qs()
+    raw_data = get_data()
     today = datetime.date.today().strftime("%Y-%m-%d")
-    show_date = today if today in data else "2026-06-01"
     
-    st.write(f"### MISSION DATE: {show_date}")
-    if show_date in data:
-        for i, item in enumerate(data[show_date]):
-            st.write(f"**Q{i+1}:** {item['q']}")
-            if st.button(f"Show Solution {i+1}"):
-                st.success(f"Answer: {item['a']}")
+    # Auto-filter for today
+    daily_tasks = [x for x in raw_data if x[0] == today]
+    
+    if daily_tasks:
+        for i, (date, q, a) in enumerate(daily_tasks):
+            st.write(f"**PROBLEM_ID_{i+1}:** {q}")
+            if st.button(f"RUN SOLUTION {i+1}"):
+                st.success(f"OUTPUT >> {a}")
     else:
-        st.error("No questions found. Please check your questions.txt format.")
+        st.warning("SYSTEM STANDBY: No questions found for today. Verify 'questions.txt' on GitHub.")
