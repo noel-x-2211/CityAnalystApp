@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class 12 & Entrance Prep Dashboard</title>
+    <style>
+        :root {
+            --primary-color: #1e293b;
+            --accent-color: #2563eb;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #334155;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2rem;
+        }
+
+        header p {
+            margin: 0.5rem 0 0 0;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        /* Tabs Navigation */
+        .tabs-nav {
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+
+        .tab-btn {
+            background-color: #e2e8f0;
+            color: var(--text-color);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn:hover {
+            background-color: #cbd5e1;
+        }
+
+        .tab-btn.active {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        /* Content Sections */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* Subject Cards */
+        .subject-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .subject-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-top: 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border-color);
+            color: var(--accent-color);
+        }
+
+        .question-block {
+            margin-bottom: 1.5rem;
+        }
+
+        .question-text {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Accordion for Solutions */
+        .solution-accordion {
+            background-color: #f1f5f9;
+            color: var(--text-color);
+            cursor: pointer;
+            padding: 0.75rem 1rem;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 0.375rem;
+            transition: background-color 0.2s ease;
+            margin-top: 0.5rem;
+        }
+
+        .solution-accordion:hover {
+            background-color: #e2e8f0;
+        }
+
+        .solution-panel {
+            padding: 0 1rem;
+            background-color: white;
+            display: none;
+            overflow: hidden;
+            border-left: 3px solid var(--accent-color);
+            margin-top: 0.5rem;
+        }
+
+        .code-snippet {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 1rem;
+            border-radius: 0.375rem;
+            font-family: 'Courier New', Courier, monospace;
+            overflow-x: auto;
+            white-space: pre;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Prep Dashboard: Boards, CUET, NDA & BCA</h1>
+        <p>Your Daily 20-Question Micro-Learning Journey</p>
+    </header>
+
+    <div class="container">
+        <!-- Tabs Bar -->
+        <div class="tabs-nav" id="tabsBar">
+            <button class="tab-btn active" onclick="switchTab(event, 'day1')">Day 1 (May 25)</button>
+            <button class="tab-btn" onclick="switchTab(event, 'day2')">Day 2 (May 26)</button>
+        </div>
+
+        <!-- DAY 1 CONTENT CONTAINER -->
+        <div id="day1" class="tab-content active">
+            
+            <!-- Mathematics Section -->
+            <div class="subject-section">
+                <div class="subject-title">Mathematics (Relations & Functions + Sets)</div>
+                
+                <div class="question-block">
+                    <p class="question-text">Q1. Let $A = \{1, 2, 3\}$. Define a relation $R$ on $A$ as $R = \{(1,1), (2,2), (3,3), (1,2), (2,1)\}$. Determine if $R$ is an equivalence relation. (CBSE/CUET)</p>
+                    <button class="solution-accordion">View Step-by-Step Solution</button>
+                    <div class="solution-panel">
+                        <p><strong>Step 1: Reflexivity</strong><br>For every $a \in A$, $(a,a) \in R$. Here, $(1,1), (2,2), (3,3) \in R$. Hence, $R$ is reflexive.</p>
+                        <p><strong>Step 2: Symmetry</strong><br>Since $(1,2) \in R$ and its reverse $(2,1) \in R$, the relation is symmetric.</p>
+                        <p><strong>Step 3: Transitivity</strong><br>Check combinations: $(1,2) \in R$ and $(2,1) \in R \implies (1,1) \in R$. This holds true for all elements. Hence, $R$ is transitive.</p>
+                        <p><strong>Conclusion:</strong> Since $R$ is reflexive, symmetric, and transitive, it is an <strong>equivalence relation</strong>.</p>
+                    </div>
+                </div>
+                <!-- More Math questions can be added here -->
+            </div>
+
+            <!-- Physics Section -->
+            <div class="subject-section">
+                <div class="subject-title">Physics (Electric Charges and Fields)</div>
+                
+                <div class="question-block">
+                    <p class="question-text">Q1. Two point charges $q_1 = +2\mu\text{C}$ and $q_2 = -6\mu\text{C}$ are placed at a distance of $10\text{ cm}$ in a vacuum. Calculate the electrostatic force between them. (CBSE/NDA)</p>
+                    <button class="solution-accordion">View Step-by-Step Solution</button>
+                    <div class="solution-panel">
+                        <p><strong>Formula:</strong> $F = \frac{1}{4\pi\varepsilon_0} \cdot \frac{|q_1 \cdot q_2|}{r^2}$</p>
+                        <p><strong>Given values:</strong><br>
+                        $q_1 = 2 \times 10^{-6}\text{ C}$, $q_2 = 6 \times 10^{-6}\text{ C}$<br>
+                        $r = 0.1\text{ m} \implies r^2 = 0.01\text{ m}^2$<br>
+                        $\frac{1}{4\pi\varepsilon_0} = 9 \times 10^9\text{ N}\cdot\text{m}^2/\text{C}^2$</p>
+                        <p><strong>Calculation:</strong><br>
+                        $F = \frac{9 \times 10^9 \times (2 \times 10^{-6} \times 6 \times 10^{-6})}{0.01}$<br>
+                        $F = \frac{9 \times 10^9 \times 12 \times 10^{-12}}{10^{-2}} = \frac{108 \times 10^{-3}}{10^{-2}} = 10.8\text{ N}$</p>
+                        <p><strong>Conclusion:</strong> The force is <strong>$10.8\text{ N}$</strong> and it is <strong>attractive</strong> in nature due to opposite charges.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chemistry Section -->
+            <div class="subject-section">
+                <div class="subject-title">Chemistry (Solutions)</div>
+                
+                <div class="question-block">
+                    <p class="question-text">Q1. Calculate the molarity of a solution containing $5\text{g}$ of $\text{NaOH}$ dissolved in $450\text{mL}$ of solution. (CBSE/CUET)</p>
+                    <button class="solution-accordion">View Step-by-Step Solution</button>
+                    <div class="solution-panel">
+                        <p><strong>Step 1: Calculate moles of $\text{NaOH}$</strong><br>
+                        $\text{Molar mass of NaOH} = 23 + 16 + 1 = 40\text{ g/mol}$<br>
+                        $\text{Moles of NaOH} = \frac{\text{Given mass}}{\text{Molar mass}} = \frac{5}{40} = 0.125\text{ moles}$</p>
+                        <p><strong>Step 2: Convert volume to Liters</strong><br>
+                        $\text{Volume} = \frac{450}{1000} = 0.45\text{ L}$</p>
+                        <p><strong>Step 3: Calculate Molarity (M)</strong><br>
+                        $M = \frac{\text{Moles of solute}}{\text{Volume of solution in L}} = \frac{0.125}{0.45} \approx 0.278\text{ M}$</p>
+                        <p><strong>Answer:</strong> <strong>$0.278\text{ mol/L}$</strong></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Computer Science Section -->
+            <div class="subject-section">
+                <div class="subject-title">Computer Science & Aptitude (Python Tour)</div>
+                
+                <div class="question-block">
+                    <p class="question-text">Q1. What will be the output of the following Python expression? (BCA Entrance)</p>
+                    <div class="code-snippet">text = "DataScience"
+print(text[4:9])</div>
+                    <button class="solution-accordion">View Step-by-Step Solution</button>
+                    <div class="solution-panel">
+                        <p><strong>Concept: String Slicing</strong><br>
+                        The syntax is <code>string[start:end]</code> where the character at the <code>end</code> index is excluded.</p>
+                        <p><strong>Execution:</strong><br>
+                        Index 4 corresponds to 'S'.<br>
+                        Indices extracted: 4, 5, 6, 7, 8 (characters 'S', 'c', 'i', 'e', 'n').</p>
+                        <p><strong>Output:</strong> <code>Scien</code></p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- DAY 2 CONTENT CONTAINER (PLACEHOLDER) -->
+        <div id="day2" class="tab-content">
+            <div class="subject-section">
+                <div class="subject-title">Day 2 Materials</div>
+                <p>Day 2 content will go here. You can copy the exact block template from Day 1 to populate this tab when Day 2 begins!</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Tab switching logic
+        function switchTab(evt, dayId) {
+            const tabcontents = document.getElementsByClassName("tab-content");
+            for (let i = 0; i < tabcontents.length; i++) {
+                tabcontents[i].className = tabcontents[i].className.replace(" active", "");
+            }
+
+            const tablinks = document.getElementsByClassName("tab-btn");
+            for (let i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+
+            document.getElementById(dayId).className += " active";
+            evt.currentTarget.className += " active";
+        }
+
+        // Accordion dropdown logic for solutions
+        document.addEventListener("click", function(e) {
+            if(e.target && e.target.classList.contains("solution-accordion")) {
+                e.target.classList.toggle("active");
+                const panel = e.target.nextElementSibling;
+                if (panel.style.display === "block") {
+                    panel.style.display = "none";
+                } else {
+                    panel.style.display = "block";
+                }
+            }
+        });
+    </script>
+</body>
+</html>
